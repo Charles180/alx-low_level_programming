@@ -17,7 +17,7 @@ int main(void)
 				putchar(number1 + '0');
 				putchar(number2 + '0');
 				putchar(number3 + '0');
-				if (number1 < 8)
+				if (number1 < 7)
 				{
 					putchar(',');
 					putchar(' ');
