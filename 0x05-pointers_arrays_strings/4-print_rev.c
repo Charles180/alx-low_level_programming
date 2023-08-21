@@ -1,7 +1,7 @@
 #include "main.h"
 #include "2-strlen.c"
 /**
- * print_revs - function to print strings followed in reverse
+ * print_rev - function to print strings followed in reverse
  *
  * @s: Pointer for string to be printed
  *
