@@ -6,21 +6,31 @@
   *
   *@s: The string
   *
-  *Return: Pointer else NULL if malloc fails
+  *Return: Null if *s is NULL
   */
 char *_strdup(char *s)
 {
-	char *dup;
+	int i, size;
+	char *a;
 
-	dup = malloc(strlen(s) + 1);
-	if (dup == NULL)
-	{
-		return (NULL);
-	}
 	if (s == NULL)
 	{
 		return (NULL);
 	}
-	strcpy(dup, s);
-	return (dup);
+	for (size = 0; s[size] != '\0'; size++)
+	{
+		a = malloc(size * sizeof(*s) + 1);
+		if (a == 0)
+		{
+			return (NULL);
+		}
+		else
+		{
+			for (i = 0; i <= size; i++)
+			{
+				a[i] = s[i];
+			}
+		}
+	}
+	return (a);
 }
