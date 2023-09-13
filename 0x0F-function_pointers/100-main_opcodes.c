@@ -32,11 +32,10 @@ int main(int argc, char *argv[])
 		exit(2);
 	}
 
-	while (i < bytes)
+	for (i = 0; i < bytes; i++)
 	{
 		opcode = *(unsigned char *)address;
 		printf("%.2x", opcode);
-		i++;
 
 		if (i == bytes - 1)
 			continue;
