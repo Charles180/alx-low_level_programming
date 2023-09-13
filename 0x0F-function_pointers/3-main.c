@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "3-calc.h"
 /**
-  *main - Function that performs simple operations
+  *main - This is the function that performs simple operations
   *
   *@argc: arguments count
   *
