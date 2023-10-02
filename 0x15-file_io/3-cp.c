@@ -1,45 +1,94 @@
 #include "main.h"
-#include <errno.h>
-#define BUFFER_SIZE 1024
+
+char *buffer_generator(char *filename);
+void close_file(int filedescriptor);
 /**
-  *main - Main entry point of program
+  *buffer_generator - Created a buffer of size 1024bytes.
   *
-  *@argc: argument count
+  *@filename: File name
   *
-  *@argv: argument vector
+  *Return: A pointer to the buffer created.
+  */
+char *buffer_generator(char *filename)
+{
+	char *b;
+
+	b = malloc(sizeof(char) * 1024);
+
+	if (b == NULL)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", filename);
+		exit(99);
+	}
+	return (b);
+}
+
+/**
+  *close_file - Closes file.
   *
-  *Return: Always 0 success
+  *@filedescriptor: The file descriptor to be closed.
+  */
+void close_file(int filedescriptor)
+{
+	int i;
+
+	i = close(filedescriptor);
+	if (i == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", filedescriptor);
+		exit(100);
+	}
+}
+
+/**
+  *main - Copies the contents of a file to another file.
+  *
+  *@argc: Argument count
+  *
+  *@argv: Argument vector
+  *
+  *Return: 0 on success.
   */
 int main(int argc, char *argv[])
 {
-	int fd_source, fd_destination, nread;
-	char b[BUFFER_SIZE];
+	int source;
+	int destination;
+	int r;
+	int w;
+	char *b;
 
 	if (argc != 3)
-		dprintf(STDERR_FILENO, "Usage: %s file_from file_to\n", argv[0]);
-	exit(97);
-	fd_source = open(argv[1], O_RDONLY);
-	if (fd_source == -1)
-		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
-	exit(98);
-	fd_destination = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd_destination == -1)
-		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
-	exit(99);
-	while ((nread = read(fd_source, b, BUFFER_SIZE)) > 0)
 	{
-		if (write(fd_destination, b, nread) != nread)
-			dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
-		exit(99);
+		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+		exit(97);
 	}
-	if (nread == -1)
-		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
-	exit(98);
-	if (close(fd_source) == -1)
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_source);
-	exit(100);
-	if (close(fd_destination) == -1)
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_destination);
-	exit(100);
+
+	b = buffer_generator(argv[2]);
+	source = open(argv[1], O_RDONLY);
+	r = read(source, b, 1024);
+	destination = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
+	while (r > 0)
+	{
+		if (source == -1 || r == -1)
+		{
+			dprintf(STDERR_FILENO,
+				"Error: Can't read from file %s\n", argv[1]);
+			free(b);
+			exit(98);
+		}
+		w = write(destination, b, r);
+		if (destination == -1 || w == -1)
+		{
+			dprintf(STDERR_FILENO,
+				"Error: Can't write to %s\n", argv[2]);
+			free(b);
+			exit(99);
+		}
+		r = read(source, b, 1024);
+		destination = open(argv[2], O_WRONLY | O_APPEND);
+	}
+	free(b);
+	close_file(source);
+	close_file(destination);
 	return (0);
 }
